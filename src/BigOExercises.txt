@@ -1,0 +1,23 @@
+VI.1 O(b)
+
+VI.2 O(b)
+
+VI.3 O(1)
+
+VI.4 O(a / b)
+
+VI.5 O(lg n)
+
+VI.6 O(sqrt(n))
+
+VI.7 O(n)
+
+VI.8 O(n)
+
+VI.9 O(n^2)
+
+VI.10 O(lg n)
+
+VI.11 O(k * c^k)
+
+VI.12 O(b lg b + a lg b)
