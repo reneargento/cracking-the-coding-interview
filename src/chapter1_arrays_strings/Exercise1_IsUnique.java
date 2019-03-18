@@ -27,7 +27,7 @@ public class Exercise1_IsUnique {
 
     // This version does not use an additional data structure
     // O(n lg n) runtime, where n is the number of characters
-    // O(1) space
+    // O(1) space (not counting the char[] representation for the string)
     public static boolean areCharactersUnique2(String string) {
         char[] chars = string.toCharArray();
         Arrays.sort(chars);
