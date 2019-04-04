@@ -36,11 +36,9 @@ public class Exercise3_DeleteMiddleNode {
     }
 
     private static void printList(Node head) {
-        Node current = head;
-
-        while (current != null) {
-            System.out.print(current.value + " ");
-            current = current.next;
+        while (head != null) {
+            System.out.print(head.value + " ");
+            head = head.next;
         }
     }
 
