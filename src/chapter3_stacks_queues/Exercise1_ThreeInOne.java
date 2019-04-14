@@ -37,6 +37,7 @@ public class Exercise1_ThreeInOne {
             return stacksInfo[stackId].size;
         }
 
+        // O(1) amortized runtime
         public void push(int stackId, Item item) {
             stacksInfo[stackId].size++;
             int stackStartIndex = getStackArrayStartIndex(stackId);
@@ -48,6 +49,7 @@ public class Exercise1_ThreeInOne {
             }
         }
 
+        // O(1) amortized runtime
         public Item pop(int stackId) {
             if (isEmpty(stackId)) {
                 throw new NoSuchElementException("Stack is empty");
@@ -67,6 +69,7 @@ public class Exercise1_ThreeInOne {
             return item;
         }
 
+        // O(1) runtime
         public Item peek(int stackId) {
             if (isEmpty(stackId)) {
                 throw new NoSuchElementException("Stack is empty");
@@ -76,10 +79,12 @@ public class Exercise1_ThreeInOne {
             return array[stackStartIndex];
         }
 
+        // O(1) runtime
         public boolean isEmpty(int stackId) {
             return stacksInfo[stackId].size == 0;
         }
 
+        // O(n) runtime, where n is the total number of elements in the array
         public void printStacks() {
             for (int stackId = 0; stackId < stacksInfo.length; stackId++) {
                 System.out.print("Stack " + (stackId + 1) + ": ");
