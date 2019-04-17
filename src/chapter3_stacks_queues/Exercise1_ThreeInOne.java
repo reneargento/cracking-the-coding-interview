@@ -37,7 +37,7 @@ public class Exercise1_ThreeInOne {
             return stacksInfo[stackId].size;
         }
 
-        // O(1) amortized runtime
+        // (1) amortized runtime, O(n) runtime
         public void push(int stackId, Item item) {
             stacksInfo[stackId].size++;
             int stackStartIndex = getStackArrayStartIndex(stackId);
@@ -49,7 +49,7 @@ public class Exercise1_ThreeInOne {
             }
         }
 
-        // O(1) amortized runtime
+        // (1) amortized runtime, O(n) runtime
         public Item pop(int stackId) {
             if (isEmpty(stackId)) {
                 throw new NoSuchElementException("Stack is empty");
