@@ -9,7 +9,7 @@ import java.util.StringJoiner;
  */
 public class Exercise5_SortStack {
 
-    public class StackSorter<Item extends Comparable<Item>> {
+    public static class StackSorter<Item extends Comparable<Item>> {
 
         // O(n^2) runtime, where n is the number of items in the stack
         // O(n) space
@@ -33,7 +33,7 @@ public class Exercise5_SortStack {
     }
 
     public static void main(String[] args) {
-        StackSorter<Integer> stackSorter = new Exercise5_SortStack().new StackSorter<>();
+        StackSorter<Integer> stackSorter = new StackSorter<>();
 
         Deque<Integer> stack = new ArrayDeque<>();
         stack.push(2);
