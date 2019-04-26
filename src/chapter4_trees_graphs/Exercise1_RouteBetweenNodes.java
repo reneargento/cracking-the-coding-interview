@@ -28,6 +28,7 @@ public class Exercise1_RouteBetweenNodes {
         }
     }
 
+    // O(v + e) runtime, where v is the number of vertices and e is the number of edges
     public static boolean isThereARoute(Graph graph, int vertex1, int vertex2) {
         int size = graph.vertices.size();
 
