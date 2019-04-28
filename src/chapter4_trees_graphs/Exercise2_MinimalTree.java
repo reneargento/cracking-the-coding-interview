@@ -6,6 +6,7 @@ package chapter4_trees_graphs;
 public class Exercise2_MinimalTree {
 
     // O(n) runtime
+    // O(n) space
     public static TreeNode buildMinimalTree(int[] values) {
         return buildTree(values, 0, values.length - 1);
     }
@@ -27,24 +28,24 @@ public class Exercise2_MinimalTree {
     public static void main(String[] args) {
         int[] values1 = {1, 2, 3, 4, 5, 6};
         TreeNode tree1 = buildMinimalTree(values1);
-        System.out.println("Height: " + getTreeHeight(tree1) + " Expected: 3");
+        System.out.println("Height: " + getTreeHeight(tree1) + " Expected: 2");
 
         int[] values2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         TreeNode tree2 = buildMinimalTree(values2);
-        System.out.println("Height: " + getTreeHeight(tree2) + " Expected: 4");
+        System.out.println("Height: " + getTreeHeight(tree2) + " Expected: 3");
     }
 
     private static int getTreeHeight(TreeNode node) {
-        return computeTreeHeight(node, 1);
+        return computeTreeHeight(node);
     }
 
-    private static int computeTreeHeight(TreeNode node, int height) {
-        if (node == null || (node.left == null && node.right == null)) {
-            return height;
+    private static int computeTreeHeight(TreeNode node) {
+        if (node == null) {
+            return -1;
         }
 
-        int leftHeight = computeTreeHeight(node.left, height + 1);
-        int rightHeight = computeTreeHeight(node.right, height + 1);
-        return Math.max(leftHeight, rightHeight);
+        int leftHeight = computeTreeHeight(node.left);
+        int rightHeight = computeTreeHeight(node.right);
+        return Math.max(leftHeight, rightHeight) + 1;
     }
 }
