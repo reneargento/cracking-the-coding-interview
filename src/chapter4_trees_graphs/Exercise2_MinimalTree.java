@@ -5,7 +5,7 @@ package chapter4_trees_graphs;
  */
 public class Exercise2_MinimalTree {
 
-    // O(n) runtime
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(n) space
     public static TreeNode buildMinimalTree(int[] values) {
         return buildTree(values, 0, values.length - 1);

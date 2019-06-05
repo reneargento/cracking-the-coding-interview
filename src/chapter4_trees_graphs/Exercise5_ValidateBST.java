@@ -5,7 +5,7 @@ package chapter4_trees_graphs;
  */
 public class Exercise5_ValidateBST {
 
-    // O(n) runtime
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(n) space
     public static boolean validateBST(TreeNode<Integer> root) {
         return validateBST(root, null, null);

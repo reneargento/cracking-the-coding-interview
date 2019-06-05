@@ -16,7 +16,7 @@ public class Exercise6_Successor {
         }
     }
 
-    // O(n) runtime
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(1) space
     public static TreeNodeParentPointer<Integer> getSuccessor(TreeNodeParentPointer<Integer> node) {
         if (node == null) {

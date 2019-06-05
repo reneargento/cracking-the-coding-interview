@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 
 public class Exercise9_BSTSequences {
 
-    // O(2^n) runtime, where n is the number of nodes
+    // O(2^n) runtime, where n is the number of nodes in the tree
     // O(2^n) space
     private static List<LinkedList<Integer>> getBSTSequences(TreeNode<Integer> node) {
         List<LinkedList<Integer>> allSequences = new ArrayList<>();

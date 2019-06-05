@@ -7,7 +7,7 @@ public class Exercise4_CheckBalanced {
 
     private static int ERROR_CODE = Integer.MIN_VALUE;
 
-    // O(n) runtime
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(n) space
     public static boolean checkBalanced(TreeNode<Integer> root) {
         return getHeight(root) != ERROR_CODE;

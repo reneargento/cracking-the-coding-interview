@@ -15,7 +15,7 @@ public class Exercise8_FirstCommonAncestor {
         }
     }
 
-    // O(n) runtime, where n is the number of nodes
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(n) space
     // 1- If both nodes are in the subtree: return ancestor
     // 2- If only one is in the subtree: return the node found

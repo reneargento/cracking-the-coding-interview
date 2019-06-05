@@ -15,7 +15,7 @@ public class Exercise3_ListOfDepths {
         return listOfDepths;
     }
 
-    // O(n) runtime
+    // O(n) runtime, where n is the number of nodes in the tree
     // O(n) space
     private static void getListOfDepths(TreeNode<Integer> treeNode, List<List<TreeNode>> listOfDepths, int depth) {
         if (treeNode == null) {
