@@ -6,8 +6,8 @@ package chapter5_bit_manipulation;
 public class Exercise1_Insertion {
 
     // Inserts bits2 into bits1 on the range [startIndex, endIndex]
-    // O(1) runtime
-    // O(1) space
+    // O(b) runtime, where b is the number of bits in bits1
+    // O(b) space
     public static int insertBits(int bits1, int bits2, int startIndex, int endIndex) {
         // Creates a mask of 1s like 11111111111
         int allOnesMask = ~0;
@@ -27,8 +27,8 @@ public class Exercise1_Insertion {
         return bits1Cleared | bits2;
     }
 
-    // O(1) runtime
-    // O(1) space
+    // O(b) runtime, where b is the number of bits in bits1
+    // O(b) space
     public static int insertBitsMethod2(int bits1, int bits2, int startIndex, int endIndex) {
         int maskBit1 = 1 << startIndex;
         int maskBit2 = 1;

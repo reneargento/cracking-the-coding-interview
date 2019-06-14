@@ -5,8 +5,8 @@ package chapter5_bit_manipulation;
  */
 public class Exercise2_BinaryToString {
 
-    // O(1) runtime
-    // O(1) space
+    // O(b) runtime, where b is the number of bits in the number
+    // O(b) space
     public static String getBinary(double number) {
         if (number <= 0 || number >= 1) {
             return "ERROR";
