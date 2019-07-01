@@ -1,0 +1,12 @@
+I would find the heavy bottle by adding to the scale different quantities of pills of each bottle.
+For each bottle with id x I would add x pills.
+The heavy bottle would be the one with id equal to the difference between the actual total weight, AW, and the expected total weight (the weight if every bottle had 1.0 gram pills), EW, multiplied by 10.
+
+Example: each bottle with id between 1 and 20 has 1.0 gram pills, except bottle 15, which has 1.1 gram pills.
+If all bottles had 1.0 gram pills the EW would be: 1 + 2 +... + 19 + 20 = (20 + 1) * 20 / 2 = 210 grams.
+The AW would be 211.5 grams because of the extra weight in the 15 1.1 gram pills.
+
+Heavy bottle = (AW - EW) * 10
+Heavy bottle = (211.5 - 210) * 10
+Heavy bottle = 1.5 * 10
+Heavy bottle = 15
