@@ -1,0 +1,27 @@
+The probability of winning Game 1 is p.
+
+The probability of winning Game 2 is: Probability of (making shot 1, making shot 2, making shot 3) +
+(not making shot 1, making shot 2, making shot 3) + (making shot 1, not making shot 2, making shot 3) +
+(making shot 1, making shot 2, not making shot 3)
+Winning Game 2: (p * p * p) + ((1- p) * p * p) + (p * (1- p) * p) + (p * p * (1- p))
+Winning Game 2: p^3 + 3 * ((1 - p) * p^2)
+Winning Game 2: p^3 + 3 * (p^2 - p^3)
+Winning Game 2: p^3 + 3p^2 - 3p^3
+Winning Game 2: 3p^2 - 2p^3
+
+I should pick Game 1 when:
+Probability of winning Game 1 > Probability of winning Game 2
+p > 3p^2 - 2p^3
+which is equal to
+1 > 3p - 2p^2
+2p^2 - 3p + 1 > 0
+(2p - 1) * (p - 1) > 0
+
+Both terms must be either positive or negative.
+Since p is never higher than 1, (p - 1) is negative. Which means that (2p - 1) is also negative.
+2p - 1 < 0
+2p < 1
+p < 0.5
+
+Therefore, for values of p < 0.5 I should pick Game 1 and for values of p > 0.5, I should pick Game 2.
+If p is equal to 0, 0.5 or 1, the probability of winning both games is the same, so it does not matter which one to pick.
