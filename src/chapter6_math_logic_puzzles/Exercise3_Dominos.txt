@@ -1,0 +1,4 @@
+The dominos cannot cover the entire board.
+
+Each domino always covers a white and a black square. The diagonally opposite corners that have been cut off have the same color.
+Therefore, it is impossible for 31 dominos to cover 30 squares of color A and 32 squares of color B.
