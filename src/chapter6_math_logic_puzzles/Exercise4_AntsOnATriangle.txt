@@ -1,0 +1,14 @@
+Walking on the triangle:
+
+The only cases in which a collision does not happen is if all ants move to the left or if all ants move to the right.
+Probability of all ants moving left = 1/2 * 1/2 * 1/2 = 1/8
+Probability of all ants moving right = 1/2 * 1/2 * 1/2 = 1/8
+Probability of no collision = 1/8 + 1/8 = 2/8 = 1/4
+Probability of collision walking on the triangle = 1 - 1/4 = 3/4
+
+Walking on an n-vertex polygon:
+
+Probability of all ants moving left = 1/2 * 1/2 * 1/2 * … * 1/2 = 1/2^n
+Probability of all ants moving right = 1/2 * 1/2 * 1/2 * … * 1/2 = 1/2^n
+Probability of no collision = 1/2^n + 1/2^n = 2/2^n = 1/2^(n - 1)
+Probability of collision walking on an n-vertex polygon = 1 - 1/2^(n - 1) = 2^(n - 1) - 1/2^(n - 1)
