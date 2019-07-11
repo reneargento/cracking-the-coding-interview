@@ -1,0 +1,11 @@
+To get 4 quarts of water:
+
+1- Fill the five-quart jug.
+2- Fill the three-quart jug with the five-quart jug content. 2 quarts of water will remain in the five-quart jug.
+3- Empty the three-quart jug.
+4- Move the 2 quarts of water from the five-quart jug to the three-quart jug.
+5- Fill the five-quart jug.
+6- Fill the remaining of the three-quart jug with the five-quart jug content. 4 quarts of water will remain in the five-quart jug.
+7- Empty the three-quart jug. The five-quart jug will have exactly 4 quarts of water.
+
+If both jugs sizes are coprimes then it is possible to measure any value between 1 and the sum of the jug sizes.
