@@ -1,0 +1,18 @@
+Considering that the island has n people and c have blue eyes.
+
+Base case: c = 1
+The person with blue eyes would see that no one else has blue eyes.
+He would know he is the only person, and would leave on the first night.
+
+Case c = 2
+Both blue-eyed persons would see each other and know that c is either equal to 1 or 2.
+They would wait for the other person to leave on the first day (if c were equal to 1).
+On the second day, noticing that the other blue-eyed person did not leave, they would know that c is equal to 2.
+Both persons would leave the island on the second night.
+
+General case: c > 2
+The logic from the previous case applies to any value of c.
+For example, if c = 3, on the third day no one would have left the island.
+Knowing that, all three blue-eyed persons would know that c = 3, and all of them would leave the island on the third night.
+
+Therefore, it will take c days for the c blue-eyed people to leave the island.
