@@ -1,0 +1,11 @@
+The gender ratio of the new population can be computed as follows:
+Different groups of families will have sequences of children such as:
+G
+BG
+BBG
+BBBG
+and so on, where B means a boy and G means a girl.
+
+If we add all the sequences into one string S (which represents the total population), we will see that every newborn child added to S has
+50% chance of being a boy and 50% chance of being a girl.
+This means that the gender ratio of the new population will still be 50% girls and 50% boys.
