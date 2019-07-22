@@ -1,0 +1,28 @@
+To find the Nth floor while minimizing the number of drops in the worst case, it is important to keep a constant number of total drops (egg 1 drops + egg 2 drops) regardless of where egg 1 breaks. This will balance the worst case.
+To do that, as each drop of egg 1 takes one more step, egg 2 is allowed one less step.
+To reduce the number of steps potentially required by egg 2 by one drop each time, egg 1 can be dropped on floor X, then go up by X - 1 floors, then by X - 2 floors, and so on.
+
+X + (X - 1) + (X - 2) + ... + 1 = 100
+(X + 1) * X / 2 = 100
+X^2 + X - 200 = 0
+
+Solving with Bhaskara
+D = 1^2 - 4 * 1 * 200
+D = 1 - 800
+D = -799
+X1 = (-1 + sqrt(-799)) / 2 * 1
+X1 = (-1 + 28.26) / 2
+X1 = 27.26 / 2
+x1 = 13.63
+
+X2 = (-1 - sqrt(-799)) / 2 * 1
+X2 = (-1 - 28.26) / 2
+X2 = -29.26 / 2
+X2 = -14.63
+
+We use X1 as the result, since it is positive. It is rounded up to 14 so egg 1 drops can be increased from floor 14, to 27, to 39, and so on, until floor 99.
+Then if egg 1 is still not broken just one more drop is required at floor 100.
+This guarantees that there will always be at most 14 drops in the worst case.
+
+To generalize this for buildings with F floors, the following formula can be used:
+(X + 1) * X / 2 = F
