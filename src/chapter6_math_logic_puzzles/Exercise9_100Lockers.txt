@@ -1,0 +1,5 @@
+The lockers which will be open are all the lockers which have an odd number of divisors.
+These are numbers that are perfect squares.
+Example: 4, which has 1, 2 and 4 as divisors; and 25, which has 1, 5 and 25 as divisors.
+
+Therefore, after the 100th pass there will be 10 lockers open: lockers 1, 4, 9, 16, 25, 36, 49, 64, 81 and 100.
