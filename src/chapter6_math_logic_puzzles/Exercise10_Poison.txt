@@ -1,0 +1,8 @@
+To figure out the poisoned bottle in as few days as possible, each bottle id could be mapped to the 10 test strips in a unique way.
+This can be done by mapping each bottle id to the test strips by its binary representation.
+Bits with value 1 in the binary representation of the bottle would mean putting a drop in the equivalent test strip.
+Nothing is done when bits have value 0.
+
+After applying the drops on the test strips, the unique combination of positive test strips would identify the poisoned bottle.
+It would be the bottle whose id has the equivalent binary representation.
+This approach would identify the poisoned bottle in 7 days.
