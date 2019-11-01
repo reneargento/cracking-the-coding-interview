@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class Exercise2_RobotInAGrid {
 
-    // O(n * m) runtime, where n is the number of rows and m is the number of columns
-    // O(n * m) space
+    // O(r * c) runtime, where r is the number of rows and c is the number of columns
+    // O(r * c) space
     private static List<Point> getPath(boolean[][] grid) {
         if (grid == null || grid.length == 0) {
             return null;
