@@ -1,0 +1,43 @@
+The main use cases of the service are:
+1- allow clients to read the stock price information.
+2- track analytics of the queries made to the service.
+
+Assumptions:
+1- there are millions of companies and the data does not fit in only one database.
+2- we want to track analytics related to the queries.
+
+A web service (such as SOAP) could be used to provide client data access. The service would be replicated in 2 servers to handle the client requests.
+This replication would allow the service to continue working in case one of the servers failed.
+
+The use of a web service decreases the flexibility of the queries that clients would be able to do if they connected directly
+to the database and adds another layer to the system. However, it provides additional security, it may make it easier for clients to integrate
+the system and it also controls what data clients will be able to access.
+
+Database sharding could be used, with data split into different databases based on the company’s name.
+The databases could have stock data related to a range of companies, in a key-value format.
+The key would be the company name and the value would be the stock price information (open, close, high, low).
+Since we may want to have information about the company, the stock price and the users who made the query (for analytics purpose), a NoSQL database could be used to avoid joins and provide more scalability.
+
+Each database would be replicated, in a master-slave replication model. The writes would happen on master and would be replicated to the slave database.
+If the master database failed, writes / reads would happen on the slave database, which would become the new master.
+Once the failed database came back up, it would be updated with the missed writes, that could be saved in a temporary buffer.
+Another method would be to have all the information in only 1 database (with replication) but due to assumption #1 the information would not fit there.
+
+By using databases to store the data, rolling back, backing up data and security could be provided using standard database features.
+Also, it would make it easier to query the data on different ways, enabling flexibility for future demands.
+One disadvantage of using databases is that information would not be easy to read.
+This would require the implementation of an additional layer to view and maintain the data, increasing implementation costs.
+
+On the other hand, if data were stored in the XML format, it would be easy to distribute, the data would be easy to be read by machines and humans, it would be easy for clients to integrate and it would be easy to make backups.
+The issue with storing data in the XML format is that performing queries would require parsing the entire file, which would have a very low perfomance.
+Due to this reason, storing the data in databases is a better approach.
+
+A cache could also be used, storing the data of the most recent accessed stock prices.
+It could be an LRU cache, which would delete the least recently used data when adding new data.
+This would speed up reads for the most commonly queried companies.
+
+Analytics would also be added to track which company’s stock data is being queried the most.
+This could enable a feature such as: users who saw company A’s stock price also checked company B’s stock price.
+
+The information would be sent from the web service to the client application in a JSON format, due to its simplicity of use and easiness to parse.
+Another approach would be to use a different technology for the client / server communication such as protocol buffers, but due to the simplicity of the data (small number of fields, no nested data), it may not be necessary.
