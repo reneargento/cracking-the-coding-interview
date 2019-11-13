@@ -1,0 +1,46 @@
+A social network would have one main data structure: the Person.
+Persons information would be stored in this data structure, which could consist of data such as id, name and friend list.
+
+The friend list would be a list of persons.
+This social network then would be a graph data structure where persons are nodes and a friendship connection between persons are edges.
+
+Given that the social network is very large, the data would have to be stored in different databases, through database sharding.
+Each database could store a range of person IDs and their information.
+A lookup table would be used to map person IDs to database IDs.
+
+When searching for a friend, we would search first for the machine in which the friend is located through his friend id.
+Then we would get the friend information from that machine.
+
+Possible optimizations:
+1- Batching machine jumps: if some friends are located on the same machine, it is better to fetch all those friends
+information in only one jump instead of doing separate individual jumps.
+2- Smart division of people on the machines: people are more likely to be friends with people who live in the same country or region as they do.
+Rather than dividing people randomly across machines, they could be divided by country, state or city to reduce the number of machine jumps.
+
+Algorithm to show the shortest path between two people:
+This algorithm could be implemented with the use of a bidirectional breadth-first search.
+Using a depth-first search would not be the optimal approach because it does not guarantee to find the shortest path between
+two nodes, as breadth-first search does.
+
+A bidirectional breadth-first search would be faster than a standard breadth-first search because it would start the
+search from both the origin and destination nodes.
+This means that the search would be faster as it would have a complexity of O(K^(P/2)) instead of O(K^P), where P is the
+shortest path length between the two persons and K is the average number of friends in a persons friend list.
+
+Follow up questions:
+1- In the real world, servers fail. How does this affect you?
+If a server failed this could make it impossible to access some friend information located in it and, therefore, the search could fail.
+To avoid that, servers should be replicated. With this added redundancy, if one server failed, another server could be queried for the desired information.
+
+2- How could you take advantage of caching?
+A LRU cache could be used to store information of the most recent searched people, including their friend list.
+This would be useful because the most active users tend to be searched the most, which would speed up the most frequent queries.
+
+3- Do you search until the end of the graph (infinite)? How do you decide when to give up?
+We could give up if the path was not found after searching for 3 levels (on both sides of the bidirectional breadth-first search).
+This is based on the Kevin Bacon law, which says that any two people on Earth are 6 or fewer acquaintance links apart.
+
+4- In real life, some people have more friends of friends than others, and are therefore more likely to make a path
+between you and someone else. How could you use this data to pick where to start traversing?
+Instead of using a queue on the bidirectional breadth-first search to store the next friends to visit, we could use
+a priority queue, which priority would be based on the number of friends of friends that the person has.
