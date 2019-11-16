@@ -1,0 +1,19 @@
+To avoid getting into infinite loops we need to avoid cycles when navigating the web graph.
+This can be done by tracking which pages have been visited, and not visiting them again if they appear on links of other pages.
+
+To define if we have visited a page we need to have a unique identifier for each page.
+Using only the page URL as the identifier could be a problem because URL parameters may sometimes identify different pages and may sometimes not.
+Using only the page content as the identifier may also be a problem because some pages may have randomly generated content.
+Therefore, the identifier can be based on a combination of snippets of the page content and its URL.
+
+We could have a database which stores a list of pages to be crawled. Then, the following process could be used:
+1- Select the highest priority page to crawl.
+2- Open the page and create its identifier based on specific subsections of the page and its URL.
+3- Query the database to see whether any page with this identifier has been crawled recently.
+4- If some page with this identifier has been crawled recently, insert the page back into the database at a low priority.
+5- If not, crawl the page and insert its links into the database.
+
+To add the possibility of “finishing” crawling the web (which would only happen in a smaller system like an intranet), then pages could be required to have a minimum priority in order to be crawled.
+
+Also, since the number of page identifiers might be too big, they could be stored on different machines.
+A lookup table could be used to map ranges of identifiers to the machine that could possibly contain the page information (if it has been visited before).
