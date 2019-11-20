@@ -1,0 +1,17 @@
+First we need to estimate how much space the 10 billion URLs would take.
+Considering that the URLs have on average 100 characters and each character is 4 bytes:
+10 000 000 000 * 100 * 4 = 4 000 000 000 000 bytes = 4 000 000 000 kilobytes = 4 000 000 megabytes = 4 000 gigabytes = 4 terabytes
+This data would probably not fit in the memory of one machine.
+
+One solution is to do two passes of the document.
+The first pass would split the list of URLs into 4000 chunks of 1 GB each.
+This could be done by storing each URL u in a file named <x>.txt where x = hash(u) % 4000.
+This would divide the URLs based on their hash value (modulo the number of chunks).
+This way, all URLs with the same hash value would be in the same file.
+
+In the second pass we would load each file into memory and create a hash set of the URLs.
+If any URL already existed in the hash set when attempting to store it, then it would be a duplicate.
+
+Another possible solution would be to divide the URLs into multiple machines, instead of files, and then check for duplicates in the hash sets.
+The advantage of that solution is that it can be easily parallelized, processing the chunks simultaneously.
+The disadvantages are that by introducing so many machines the complexity of the system increases and there is a chance of some of the machines failing, requiring the introduction of failure handling.
