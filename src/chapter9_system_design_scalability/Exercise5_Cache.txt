@@ -1,0 +1,74 @@
+Assumptions
+1- The number of queries we wish to cache is large (millions)
+2- Calling between machines is relatively quick
+3- The result for a given query is an ordered list of URLs, each of which has an associated 50 character title
+and 200 character summary
+4- The most popular queries are extremely popular, such that they would always appear in the cache
+
+System requirements
+1- Efficient lookups given a key
+2- Expiration of old data so that it can be replaced with new data
+3- The cache must be updated when the results for a query change
+
+Step 1: Design a cache for a single system
+In a single system a cache could be composed of a combination of 2 data structures:
+1- A doubly-linked-list which nodes would store the results of the queries.
+When a query is made, the associated node is moved to the end of the list, which has the most fresh data.
+When the list exceeds a certain size, its oldest element is removed.
+The linked list is a doubly-linked-list to allow removing any node in O(1) (considering that we have a reference to that node).
+2- A hash map which has the queries as keys and the linked list nodes as values.
+This enables O(1) access to the cached query results and also allows adding the node to the end of the linked list
+(if it is not in the cache yet) or removing and moving the result node to the end of the linked list (if it is already
+in the cache) in O(1) runtime.
+
+Step 2: Expand to many machines
+With many machines the cache could be divided, such that each machine would hold a different part of it.
+Queries could be assigned to machines based on the formula hash(query) % N (where N is the number of machines).
+Then, when machine i needs to look up the results for a query, machine i would apply the formula and call out the
+machine that holds this value (machine j) to look up the query in its cache.
+Machine j would then return the value from its cache or call processSearch(query) to get the results.
+Machine j would update its cache and return the results back to machine i.
+
+Alternatives include:
+1- Designing the system such that machine j returns null if it doesn't have the query in its cache.
+This would require machine i to call processSearch and then forward the results to machine j for storage.
+This implementation would increase the number of machine-to-machine calls, with few advantages.
+2- Designing the system such that each machine has its own cache. This has the advantage of being relatively quick,
+since no machine-to-machine calls are used. However, the cache would be less efficient as an optimization tool as many
+repeat queries would be treated as fresh queries.
+3- Designing the system such that each machine has a copy of the cache. In this case common queries would nearly always
+be in the cache, as the cache is the same everywhere. The major drawback however is that updating the cache means
+firing off data to N different machines, where N is the size of the response cluster. Additionally, because each item
+effectively takes up N times as much space, the cache would hold much less data.
+
+Step 3: Updating results when contents change
+The primary times that results would change are:
+1- The content at a URL changes (or the page at that URL is removed)
+2- The ordering of results change in response to the rank of a page changing
+3- New pages appear related to a particular query
+
+To handle these situations an "automatic time out" could be implemented on the cache.
+A time out would be imposed where no query, regardless of how popular it is, could sit in the cache for more than x minutes.
+This would ensure that all data is periodically refreshed.
+
+Alternatives include:
+1- Creating a separated hash table that would map specific URLs to cached queries. This could be handled completely separately
+from the other caches, and reside on different machines. However, this solution would require a lot of data.
+2- Periodically crawl through the cache stored on each machine to purge queries tied to the updated URLs.
+This could work if the data doesn't require instant refreshing (it usually does not require).
+3- Update single word queries by parsing the content at the new URL and purging these one-word queries from the caches.
+This would only handle the one-word queries and situation #3 from the list above.
+
+Step 4: Further enhancements
+1- Optimization in a situation where some queries are very popular:
+For very popular queries, rather than machine i forwarding the request to machine j every time, machine i could forward
+the request just once to j, and then machine i could store the results in its own cache as well.
+2- Optimization when re-architecting the system is possible:
+Queries could be assigned to machines based on their hash value (and therefore the location of the cache) rather than randomly.
+This decision may have the drawback of having an unbalanced load on the machines, with machines that have the most popular queries cached
+being assigned most of the requests.
+3- Optimization to the “automatic time out” mechanism when we want to update some data (such as current news) much more
+frequently than other data (such as historical stock prices):
+Time outs could be based on topic or based on URLs. In the latter situation, each URL would have a time out value based
+on how frequently the page has been updated in the past.
+The time out for the query would be the minimum of the time outs for each URL.
