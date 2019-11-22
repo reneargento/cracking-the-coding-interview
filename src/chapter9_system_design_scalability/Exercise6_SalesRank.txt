@@ -1,0 +1,154 @@
+Step 1: Scope the problem
+1- We will assume that we are only being asked to design the components relevant to this question, and not the entire eCommerce system.
+We will only touch parts of the system that impact the sales rank.
+2- We will assume that sales rank means total sales over the past week.
+3- We will assume that each product can be in multiple categories, and that there is no concept of "subcategories".
+
+Step 2: Make reasonable assumptions
+1- We will assume that the stats do not need to be 100% up-to-date.
+Data can be up to an hour old for the most popular items (for example, top 100 in each category), and up to one day old
+for the less popular items.
+2- Precision is important for the most popular items, but a small degree of error is okay for the less popular items.
+3- We will assume that the data should be updated every hour (for the most popular items), but the time range for this
+data does not need to be precisely the last seven days (168 hours). If it is sometimes more like 150 hours, that is ok.
+4- We will assume that the categorizations are based strictly on the origin of the transaction (i.e., the seller's name),
+not the price or date.
+
+Step 3: Draw the major components
+In this step we design just a basic, naive system, that describes the major components.
+The following whiteboard drawing would be made:
+
+                        Purchase system
+                                \
+                                 \ orders added to database
+                                  \
+                                   v
+ Frontend <--- Sales rank <----- Database
+                   data     sort
+
+In this simple design, we store every order as soon as it comes into the database.
+Every hour or so, we pull sales data from the database by category, compute the total sales, sort it, and store it in
+some sort of sales rank data cache (which is probably held in memory).
+The frontend just pulls the sales rank from this table, rather than hitting the standard database and doing its own analytics.
+
+Step 4: Identify the key issues
+1- Analytics are expensive
+In the naive system, we periodically query the database for the number of sales in the past week for each product.
+This will be fairly expensive. That is running a query over all sales for all time.
+Our database just needs to track the total sales.
+We will assume (as noted in step 1) that the general storage for purchase history is taken care of in other parts of the system,
+and we just need to focus on the sales data analytics.
+Instead of listing every purchase in our database, we will store just the total sales from the last week.
+Each purchase will just update the total weekly sales.
+
+Tracking the total sales over the past week could be done using just a single column in the database, but that would
+require the re-computation of the total sales every day (since the specific days covered in the last seven days change with
+each day). That is unnecessarily expensive.
+Instead, a table with 7 columns could be used:
+ -----------------------------------------------------------------------------------------
+|Product ID | Total | Sunday | Monday | Tuesday | Wednesday | Thursday | Friday | Saturday|
+ -----------------------------------------------------------------------------------------
+This is essentially like a circular array. Each day, we clear out the corresponding day of the week.
+On each purchase, we update the total sales count for that product on that day of the week, as well as the total count.
+
+We will also need a separate table to store the associations of product IDs and categories.
+ ------------------------
+|Product ID | Category ID|
+ ------------------------
+To get the sales rank per category, we will need to join these tables.
+
+2- Database writes are very frequent
+Even with this change, we will still be hitting the database very frequently.
+With the amount of purchases that could come in every second, we will probably want to batch up the database writes.
+Instead of immediately commiting each purchase to the database, we could store purchases in some sort of in-memory cache,
+as well as to a log file as a backup.
+Periodically, we will process the log / cache data, gather the totals, and update the database.
+It would be feasible to hold this data in memory: if there are 10 million products in the system and they are stored
+(along with a count) in a hash table they would take about 80 megabytes.
+Each product ID would be 4 bytes (which is big enough to hold up to 4 billion unique IDs) and each count would also be
+4 bytes (more than enough).
+10 000 000 (products) * 8 (bytes per product) = 80 000 000 bytes = 80 000 kilobytes = 80 megabytes.
+Even with some additional overhead and substantial system growth, we would still be able to fit this all in memory.
+
+After updating the database, we can re-run the sales rank data.
+It is important to take care here to avoid creating bias in the data (running the sales rank when some products have a
+larger timespan data than other products).
+We can resolve this by either ensuring that the sales rank does not run until all stored data is processed (difficult to
+do when more and more purchases are coming in), or by dividing up the in-memory cache by some time period.
+If we update the database for all the stored data up to a particular moment in time, this ensures that the database will
+not have biases.
+
+3- Joins are expensive
+We have potentially tens of thousands of product categories.
+For each category, we will need to first pull the data for its items (possibly through an expensive join) and then sort those.
+Alternatively, we could just do one join of products and categories, such that each product will be listed once per category.
+Then, we could sort the data on the category first and then the sales volume.
+By walking in the results, we would get the sales rank for each category.
+We would also need to do one sort of the entire table on just sales number, to get the overall rank.
+
+Another option would be to keep the data in a table like this from the beginning, rather than doing joins.
+The only drawback of this alternative is that it would require us to update multiple rows for each product.
+
+4- Database queries might still be expensive
+Alternatively, if the queries and writes get very expensive, we could consider forgoing a database entirely and just
+using log files. This would allow us to take advantage of something like MapReduce.
+Under this system, we would write a purchase to a simple text file with the product ID and timestamp.
+Each category has its own directory, and each purchase gets written to all the categories associated with that product.
+We would run frequent jobs to merge files together by product ID and time ranges, so that eventually all purchases in a
+given day (or possibly hour) were grouped together.
+Example:
+ /sportsequipment
+   1423,Dec 13 08:23-Dec 13 08:23,1
+   4221,Dec 13 15:22-Dec 15 15:45,5
+   ...
+ /safety
+   1423,Dec 13 08:23-Dec 13 08:23,1
+   5221,Dec 12 03:19-Dec 12 03:28,19
+
+To get the best-selling products within each category, we just need to sort each directory by sales volume.
+To get the overall ranking there are two good approaches:
+1- Treat the general category as just another category, and write every purchase to that directory.
+That would mean a lot of files in this directory.
+2- Or, since we would already have the products sorted by sales volume order for each category, we could also do an
+N-way merge to get the overall rank.
+
+Alternatively, we can take advantage of the fact that the data does not need (as we assumed earlier) to be 100% up-to-date.
+We just need the most popular items to be up-to-date.
+We can merge the most popular items from each category in a pairwise fashion.
+So, two categories get paired together and we merge the most popular items (the first 100 or so).
+After we have 100 items in this sorted order, we stop merging this pair and move onto the next pair.
+
+To get the ranking for all products, we can be much lazier and only run this work once a day.
+One of the advantages of this is that it scales nicely.
+We can easily divide up the files across multiple servers, as they are not dependent on each other.
+
+Follow up questions
+1- Where do you think you would hit the next bottlenecks? What would you do about that?
+The next bottlenecks would be related to the single-point-of-failures in the system:
+1.1- The communication between the frontend and the server providing the sales rank data.
+Having only one server providing the sales rank data to the frontend client would be a bottleneck.
+If this server failed, the frontend would not be able to access the data.
+To fix this, multiple servers would serve the frontend client. Also, if there is more than one client, a load balancer
+would balance the requests to the servers.
+1.2- The communication between the server providing the sales rank data and the servers storing the log files.
+We would also need to replicate the machines with the log files.
+We could have a master and slave model, where writes and reads would be made on the master, with writes copied to the slave machine.
+If the master machine failed, the slave would become the new master.
+Once the old master machine (now slave) recovered, the writes that were made on the new master machine would be copied to it.
+
+2- What if there were subcategories as well? So items could be listed under "Sports" and "Sports Equipment" (or even
+"Sports" > "Sports Equipment" > "Tennis" > "Rackets")?
+Having subcategories would not change much the current design.
+We would have subdirectories to store the log files with data related to the subcategories.
+To get their best-selling products we would follow the same approach as before, and sort their directories.
+To get the best-selling products within a category or subcategory that contains other subcategories we could do an
+N-way merge (in a pairwise fashion) of the most popular items of each directory and subdirectory related to it,
+taking care to avoid duplicates in the final rank.
+The same process would apply for getting the ranking of all products.
+
+3- What if data needed to be more accurate? What if it needed to be accurate within 30 minutes for all products?
+If data needed to be more accurate, instead of doing the N-way merge only on the most popular items, we would do it
+on more products (how many more products depends on the required accuracy).
+The trade-off for this higher accuracy would be that it would take longer to do this merge.
+If data needed to be accurate within 30 minutes for all products we would have a job scheduled to do the N-way merge on
+all products every 30 minutes.
