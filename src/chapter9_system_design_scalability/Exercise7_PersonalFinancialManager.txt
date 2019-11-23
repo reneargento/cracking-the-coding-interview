@@ -1,0 +1,178 @@
+Step 1: Scope the problem
+We will scope the problem as follows:
+1- A user can create an account and add multiple bank accounts. The user can also add them at a later point in time.
+2- The system will pull in all of the user's financial history, or as much of it as his/her bank will allow.
+3- This financial history will include outgoing money (things the user bought or paid for), incoming money (salary and
+other payments), and the users current money (the value on the users bank account and investments).
+4- Each payment transaction has a category associated with it (food, travel, clothing, etc.).
+5- There is some sort of data source provided that tells the system, with some reliability, which category a transaction
+is associated with (based on the seller's name alone). The user might, in some cases, override the category when it is
+improperly assigned (e.g., eating at the cafe of a department store getting assigned to "clothing" rather than "food").
+6- Users will use the system to get recommendations on their spending.
+These recommendations will come from a mix of "typical" users ("people generally should not spend more than X% of their
+income on clothing"), but can be overridden with custom budgets. This will not be a primary focus right now.
+7- This will be a system available only in a website for now, although the creation of a mobile app based on it would be simple.
+8- The system will send email notifications either on a regular basis, or on certain conditions (spending over a certain
+threshold, hitting a budget max, etc.)
+9- We will assume that there is no concept of user-specified rules for assigning categories to transactions.
+
+Step 2: Make reasonable assumptions
+In this step we define some further assumptions about the characteristics of the system.
+1- Adding or removing bank accounts is relatively unusual.
+2- The system is write-heavy.
+A typical user may make several new transactions daily, although few users would access the website more than once a week.
+In fact, for may users, their primary interaction might be through email alerts.
+3- Once a transaction is assigned to a category, it will only be changed if the user asks to change it.
+The system will never reassign a transaction to a different category "behind the scenes", even if the rules change.
+This means that two otherwise identical transactions could be assigned to different categories if the rules changed
+in between each transaction's date.
+It would confuse users if their spending per category changed with no action on their part.
+4- The system will pull data from the banks.
+5- Alerts on users exceeding budgets probably do not need to be sent instantaneously. (That would not be realistic anyway,
+since we will not get the transaction data instantaneously). They may be up to 24 hours delayed.
+
+Step 3: Draw the major components
+In this step we draw a simple, naive system to begin the design.
+The most naive system would be one that pulls bank data on each login, categorizes all the data, and then analyses the user's budget.
+This would not fit the requirements though, because it would not allow the delivery of email notifications on particular events.
+
+      Bank data
+     synchronizer
+          |
+          |
+          V
+     Raw transaction  -----> Categorizer
+          data                   |
+                                 |
+                                 V
+       Frontend   <------>   Categorized
+          ^                  transactions
+          |                      |
+          |                      |
+          V                      V
+       Budget data  <-----  Budget analyzer
+
+With this basic architecture, the bank data is pulled at periodic times (hourly or daily).
+The frequency may depend on the behavior of the users.
+Less active users may have their accounts checked less frequently.
+Once new data arrives, it is stored in some list of raw, unprocessed transactions.
+This data is then pushed to the categorizer, which assigns each transaction to a category and stores these categorized
+transactions in another datastore.
+The budget analyzer pulls in the categorized transactions, updates each user's budget per category, and stores the
+user's updated budget.
+The frontend pulls data from both the categorized transactions datastore as well as from the budget datastore.
+Additionally, a user could also interact with the frontend by changing the budget or the categorization of their transactions.
+
+Step 4: Identify the key issues
+This will be a very data-heavy system.
+It should feel snappy and responsive, though, so it should do as much asynchronous processing as possible.
+A task queue will be used, where work that needs to be done will be queued up.
+This work will include tasks such as pulling in new bank data, re-analyzing budgets, and categorizing new bank data.
+It will also include re-trying tasks that failed.
+The tasks will also have a priority associated with them, as some need to be performed more often than others.
+The priorization of some task types over others will be done while still ensuring that all tasks will be performed eventually.
+This will avoid that low priority tasks starve in the case that there are always higher priority tasks in the queue.
+
+For the email system a task will be queued whenever a transaction occurs that potentially exceeds a budget.
+To make it easy to understand if a new transaction exceeds the budget, the current budget totals by category will be stored in the system.
+It would also be possible to use a task to regularly crawl user's data to check if they are exceeding their budget,
+but that would mean checking every single user daily, which is not as effective as the above solution.
+
+A system like this will probably have a large number of inactive users - users who signed up once and then have not touched the system since.
+The system will track users account activity and will associate priority to each user account.
+Users with an account with lower priority will have their bank data pulled less often and may have the account deactivated.
+
+The biggest bottleneck in the system will be the massive amount of data that needs to be pulled and analyzed.
+The bank data will be fetched asynchronously and the tasks will run across many servers.
+
+Categorizer and budget analyzer
+It is important to note that transactions are independent from each other.
+With lots of transactions happening frequently a standard database would not be very efficient, especially due to the
+number of join operations that could be required.
+The transactions will be stored in a set of flat text files.
+It was assumed that the categorizations are based on the seller's name alone.
+With lots of users, there will be a lot of duplicates across the sellers.
+To take advantage of these duplicates, the transaction files will be grouped by seller's name.
+
+The categorizer and budget analyzer will work in the following way:
+
+ Raw transaction data, ----> categorized data, ----> update categorized
+ grouped by seller           grouped by user            transactions
+                                   |
+                                   |
+                                   |
+                                   V
+                             merge & group by
+                             user & category
+                                   |
+                                   |
+                                   |
+                                   V
+                              update budgets
+
+The categorizer first gets the raw transaction data, grouped by seller.
+It picks the appropriate category for the seller (which might be stored in a cache for the most common sellers), and then
+applies that category to all those transactions.
+After applying the category, it re-groups all the transactions by user.
+Then, those transactions are inserted into the database for this user.
+
+Before categorizer             After categorizer
+amazon/                        user121/
+   user121,$5.43,Aug 13           amazon,shopping,$5.43,Aug 13
+   user922,$15.39,Aug 27          ...
+   ...                         user922/
+comcast/                          amazon,shopping,$15.39,Aug 27
+   user922,$9.29,Aug 24           comcast,utilities,$9.29,Aug 24
+   user248,$40.13,Aug 18          ...
+   ...                         user248/
+                                  comcast,utilities,$40.13,Aug 18
+                                  ...
+
+Then, the budget analyzer comes in. It takes the data grouped by user, merges it across categories (so all Shopping tasks
+for this user in this timespan are merged), and then updates the budget.
+Most of these tasks will be handled in simple log files.
+Only the final data (the categorized transactions and the budget analysis) will be stored in a database.
+This minimizes writing and reading from the database.
+
+User changing categories
+The user might selectively override particular transactions to assign them to a different category.
+In this case, the system would update the datastore for the categorized transactions.
+It would also signal a quick recomputation of the budget to decrement the item from the old category and increment the item
+in the other category.
+We could also recompute the budget from scratch, looking over the past few weeks of transactions for the user, but it
+would not be as efficient as just decrementing the old category budget and incrementing the new category budget.
+
+Follow up questions
+1- How would this change if you also needed to support a mobile app?
+Adding support for a mobile app would be simple.
+It would have the same role as the website, being the frontend of the system.
+The app would have an API to call the server to fetch both user's categorized transactions and budget information.
+A job would be executed to fetch this information regularly.
+It would also have an API to send to the server transactions which had their category manually updated by the user.
+There would also be a cache with the users' data for the cases where the app was accessed in offline mode.
+
+2- How would you design the component which assigns items to each category?
+I would use a combination of:
+2.1- initial data in a hashmap which would map the most common items to known categories.
+If there are too many items, the map could be distributed on different servers.
+2.2- for the unknown items, the user would have to input the category to which the item belongs manually.
+Also, artificial intelligence would be used to find similarities between new/unknown items and known items to suggest
+or automatically assign categories.
+Users would always be able to override item's categories.
+
+3- How would you design the recommended budgets feature?
+The server would have a mapping of category and recommended percentage of budget spent during the month.
+Transactions would still be checked to see if they exceed the recommended budget (as mentioned above), and to send an
+email to the user if any budget was exceeded.
+It would be easy to add new category-budget mappings or update existing mappings in the server, and the website
+(or app) would regularly fetch this data.
+These budgets could be overridden by the user at any time.
+
+4- How would you change this if the user could develop rules to categorize all transactions from a particular seller
+differently than the default?
+The system would give the user the option of modifying or not the category of past transactions of these particular sellers.
+When the categorizer gets the raw transaction data, grouped by seller (as mentioned above), it would categorize all
+transactions from sellers as usual, except from the ones included in these special rules.
+For transactions from these sellers, it would apply the categories selected in the user rules.
+The system would keep a mapping of sellers and categories added by the user to check which ones follow different rules.
+After this, data would be grouped by users and would continue the same flow as before.
