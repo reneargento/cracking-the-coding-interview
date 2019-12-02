@@ -11,8 +11,6 @@ for the less popular items.
 2- Precision is important for the most popular items, but a small degree of error is okay for the less popular items.
 3- We will assume that the data should be updated every hour (for the most popular items), but the time range for this
 data does not need to be precisely the last seven days (168 hours). If it is sometimes more like 150 hours, that is ok.
-4- We will assume that the categorizations are based strictly on the origin of the transaction (i.e., the seller's name),
-not the price or date.
 
 Step 3: Draw the major components
 In this step we design just a basic, naive system, that describes the major components.

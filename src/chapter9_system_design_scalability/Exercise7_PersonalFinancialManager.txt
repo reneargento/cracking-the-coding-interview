@@ -6,15 +6,17 @@ We will scope the problem as follows:
 other payments), and the users current money (the value on the users bank account and investments).
 4- Each payment transaction has a category associated with it (food, travel, clothing, etc.).
 5- There is some sort of data source provided that tells the system, with some reliability, which category a transaction
-is associated with (based on the seller's name alone). The user might, in some cases, override the category when it is
+is associated with. The user might, in some cases, override the category when it is
 improperly assigned (e.g., eating at the cafe of a department store getting assigned to "clothing" rather than "food").
-6- Users will use the system to get recommendations on their spending.
+6- We will assume that the categorizations are based strictly on the origin of the transaction (i.e., the seller's name),
+not the price or date.
+7- Users will use the system to get recommendations on their spending.
 These recommendations will come from a mix of "typical" users ("people generally should not spend more than X% of their
 income on clothing"), but can be overridden with custom budgets. This will not be a primary focus right now.
-7- This will be a system available only in a website for now, although the creation of a mobile app based on it would be simple.
-8- The system will send email notifications either on a regular basis, or on certain conditions (spending over a certain
+8- This will be a system available only in a website for now, although the creation of a mobile app based on it would be simple.
+9- The system will send email notifications either on a regular basis, or on certain conditions (spending over a certain
 threshold, hitting a budget max, etc.)
-9- We will assume that there is no concept of user-specified rules for assigning categories to transactions.
+10- We will assume that there is no concept of user-specified rules for assigning categories to transactions.
 
 Step 2: Make reasonable assumptions
 In this step we define some further assumptions about the characteristics of the system.

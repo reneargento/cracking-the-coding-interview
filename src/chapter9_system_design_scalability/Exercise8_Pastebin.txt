@@ -1,0 +1,134 @@
+Step 1: Scope the problem
+We will scope the problem as follows:
+1- The system will generate random URLs.
+2- The system does not support user accounts or editing documents.
+3- The system tracks analytics of how many times each page is accessed.
+4- Old documents get deleted after not being accessed for a sufficiently long period of time.
+5- While authentication is not required for accessing documents, users should not be able to "guess" document URLs easily.
+6- The system has a frontend as well as an API.
+7- The analytics for each URL can be accessed through a "stats" link on each page. It is not shown by default, though.
+8- The system cannot lose data inputted by users
+
+Step 2: Make reasonable assumptions
+1- The system gets heavy traffic and contains many millions of documents.
+2- Traffic is not equally distributed across documents. Some documents get much more access than others.
+
+Step 3: Draw the major components
+In this step we draw a simple, initial design.
+The system will need to keep track of URLs and the files associated with them, as well as analytics for how often the
+files have been accessed.
+There are two options to store the documents: store them in a database or on a file.
+Since the documents can be large and it is unlikely we need searching capabilities, storing them on a file is probably
+the better choice.
+
+A simple design like this might work well:
+
+                >  server with files
+               /
+ URL to file  /
+   database   ---> server with files
+             \
+              \
+               >   server with files
+
+In this design a simple database looks up the location (server and path) of each file.
+When a request for a URL arrives, the system looks up the location of the URL within the datastore and then access the file.
+Additionally, a database for tracking analytics will be used.
+The database will store each visit (including timestamp, IP address, and location) as a row.
+
+Step 4: Identify the key issues
+Some documents will be accessed much more frequently than others and reading data from the filesystem is relatively slow
+compared with reading data from memory.
+Due to that, a cache will be used to store the most recently accessed documents.
+This will ensure that items accessed very frequently (or very recently) will be quickly accessible.
+Since documents cannot be edited, we will not need to worry about invalidating this cache.
+
+To handle the storage of millions of documents, the database will be sharded.
+The sharding can be done using a mapping from the URL (for example, the URL's hash code modulo the number of databases),
+which will allow the system to quickly locate the database which contains the related file.
+Another approach would be to take this a step further and skip the database entirely, using the modular hash of the URL
+as a key to indicate which server contains the document.
+The URL itself would reflect the location of the document. One potential issue from this is that if more servers have to
+be added, it could be difficult to redistribute the documents.
+
+Generating URLs
+One of the assumptions is that users should not be able to "guess" document URLs easily, so the URLs should not be based
+on monotonically increasing integer values. The goal is to have URLs that are difficult to access without being provided
+the link. One approach would be to generate a random GUID (e.g., 5d50e8ac-57cb-4a0d-8661-bcdee2548979).
+This is a 128-bit value that, while not strictly guaranteed to be unique, has low enough odds of a collision that it can
+be treated as unique. The drawback of this plan is that such a URL is not very "pretty" to the user.
+It could be hashed to a smaller value, but then that increases the odds of a collision.
+
+A better approach would be to generate a 10-character sequence of letters and numbers, which can generate 36^10 possible
+strings. Even with a billion URLs, the odds of a collision on any specific URL are very low.
+However, considering the whole system, after storing a billion URLs, it is very likely that a collision will happen
+at some point.
+Collisions can be handled in two steps:
+1- Detect if a collision occurred: it is possible to either check the datastore to see if the URL exists yet, or, if the
+URL maps to a specific server, just detect whether a file already exists at the destination.
+2- Handle the collision: just generate a new URL. With 36^10 possible URLs, collisions would be rare enough that the
+lazy approach of detecting and retrying is sufficient.
+
+Analytics
+In the analytics component, the system will display the number of visits and will break this data down by month and year.
+There are two options here:
+1- Store the raw data from each visit.
+2- Store just the data that the system will use (number of visits, etc.).
+The system will store the raw data because it is possible that in the future more analytics data may be needed and the
+raw data allows flexibility.
+The raw data does not need to be easily searchable or accessible.
+The system will store a log of each visit in a file and will back it up on other servers.
+
+One possible issue is that the amount of raw data stored could be substantial.
+To potentially reduce the space usage considerably, data could be stored only probabilistically.
+Each URL would have a storage_probability associated with it. As the popularity of a site goes up, the storage_probability
+goes down. For example, a popular document might have data logged only one out of every ten times, at random.
+When the system looks up the number of visits for the site, it will need to adjust the value based on the probability
+(for example, by multiplying it by 10). This will lead to a small inaccuracy, but that may be acceptable.
+
+The log files will not be used frequently so the relevant data related to each visit (URL, parsed timestamp and number
+of visits) will be stored in a database. If the analytics just displays the number of visits plus a graph over time, it
+could be kept in a separate database.
+Example data:
+  --------------------------------------
+ |    URL     | Month and Year | Visits |
+ | 12ab31b92p | December 2018  | 242119 |
+ | 12ab31b92p | January 2019   | 429918 |
+ |    ...     |     ...        |  ...   |
+  --------------------------------------
+Every time a URL is visited, this data would be updated.
+This datastore can also be sharded by the URL.
+
+As the stats are not listed on the regular pages and would generally be of less interest, it should not face as heavy of
+a load. The generated HTML on the frontend servers could still be cached, so that the database is not frequently accessed
+for the most popular URLs.
+
+Old documents
+With the use of analytics data, it will be possible to see which pages have not been accessed for a long period of time.
+After this period of time (which would be configurable in the system), pages would be deleted to free up space in the
+datastore.
+
+Follow-up questions
+1- How would you support user accounts?
+The system would have a database to store users' login and encrypted passwords.
+The system would be flexible in a way that users could continue to generate URLs without creating an account, but would
+offer advantages if an account was created.
+With an account users would be able to see a list of their stored URLs and pages, edit the pages' content or delete pages.
+Users would also have the option to delete their accounts.
+
+2- How would you add a new piece of analytics (e.g., referral source) to the stats page?
+Considering that the system is storing the raw data from each visit, this data is already available on logs.
+I would add a new column to the analytics database table to store the new piece of analytics and would run a job to fill
+it for past visits based on the logs.
+For the new visits, the new piece of analytics would be extracted together with the other relevant fields (URL, parsed
+timestamp and number of visits), and stored in the analytics database.
+
+3- How would your design change if the stats were shown with each document?
+If the stats were shown together with each document, I would store them in a NoSQL database together with the URL and the
+page content.
+This would be done to avoid costly joins from different tables (for the documents and analytics tables) in a relational
+database, increasing scalability.
+The database would be sharded by URL, based on the URL's hash code modulo the number of databases, as before.
+When accessing a document a single query would be used to get all the data, fetching the page content and stats effectively.
+The drawback of this solution is that more data would be stored because the page content would be saved multiple times
+(once for each related stats row) in the non-normalized table.
