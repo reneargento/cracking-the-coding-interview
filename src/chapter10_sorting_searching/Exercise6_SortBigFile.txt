@@ -1,0 +1,5 @@
+To sort a 20 GB file with one string per line I would use external sort:
+The file would be divided into chunks of x megabytes each, where x is the amount of memory available.
+Each chunk would be sorted separately and saved back to the file system.
+Once all the chunks were sorted, they would be merged, one by one.
+At the end, we would have a fully sorted file.
