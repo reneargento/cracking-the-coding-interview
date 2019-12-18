@@ -30,7 +30,7 @@ public class Exercise3_SearchInRotatedArray {
             } else {
                 return searchInRotatedArray(array, value, middle + 1, high);
             }
-        } if (array[low] > array[middle]) { // Right side is normally ordered.
+        } else if (array[middle] < array[high]) { // Right side is normally ordered.
             if (array[middle] < value && value <= array[high]) {
                 return searchInRotatedArray(array, value, middle + 1, high);
             } else {
