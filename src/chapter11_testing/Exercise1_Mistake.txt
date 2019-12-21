@@ -1,0 +1,9 @@
+There are two mistakes in the code:
+
+#1: The variable "i" is an unsigned int, so its value will never go below zero.
+When the for loop tries to decrement it below zero, it will wrap to its maximum value.
+This will lead to an infinite loop.
+To fix this, the for loop condition should be "i > 0" and an extra instruction should be added after the for loop to print
+the 0 value.
+
+#2: Since "i" is an unsigned int, the parameter to printf() should be "%u" instead of "%d".
