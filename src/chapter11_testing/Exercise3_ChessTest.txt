@@ -1,0 +1,30 @@
+I would test the canMoveTo() method with two primary types of testing: extreme case validation (ensuring that the program
+doesn't crash on bad input) and general case testing.
+
+Testing type #1: Extreme case validation
+
+To ensure that the program handles bad or unusual input gracefully, the following conditions would be checked:
+Test with negative numbers for x and y
+Test with x larger than the width
+Test with y larger than the height
+Test with a completely full board
+Test with an empty or nearly empty board
+Test with far more white pieces than black
+Test with far more black pieces than white
+
+For the error cases above, it would be checked to see if they return either false or throw an exception (according to
+what the interviewer says that is excepted).
+
+Testing type #2: General testing
+
+Ideally all boards would be tested, but there are far too many boards. It is possible, however, to perform a reasonable
+coverage of different boards.
+
+There are 6 pieces in chess, so it is possible to test each piece against every piece, in every possible direction.
+This would look something like the below code:
+foreach piece a:
+    foreach type of piece b (6 types + empty space)
+        foreach direction d
+            Create a board with piece a.
+            Place piece b in direction d.
+            Try to move - check return value.
