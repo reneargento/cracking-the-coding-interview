@@ -1,0 +1,14 @@
+To load test a webpage I would start with identifying the performance critical scenarios and the metrics which fulfills
+the performance objectives. Typical criteria include:
+* Response time
+* Throughput
+* Resource utilization
+* Maximum load that the system can bear
+
+Then, tests would be designed to simulate the load, taking care to measure each of these criteria.
+
+Concurrent users would be simulated by creating thousands of virtual users.
+A multi-threaded program with thousands of threads would be used, where each thread acts as a real-world user loading the page.
+For each user, the response time, data I/O, etc., would be programmatically measured.
+
+The results would then be analyzed based on the data gathered during the tests and compared with the accepted values.
