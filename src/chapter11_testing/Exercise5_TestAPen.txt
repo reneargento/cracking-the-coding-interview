@@ -1,0 +1,18 @@
+To test a pen I would start by asking questions to understand the scenario:
+1- Who is going to use the pen (adults, children, or some other specific group).
+2- For what objective (writing, drawing, coloring or something else).
+3- Where the pen is going to be used on (paper, clothing, walls).
+4- What kind of tip the pen has (felt, ballpoint).
+5- Is the ink intended to wash off or is it intended to be permanent.
+6- What color is the ink supposed to be?
+7- What is the length and width of the pen supposed to be?
+
+I would then design the test cases and verify if the pen holds up under these conditions:
+1- Fact check: verify if the pen has the expected tip and that the ink is one of the allowed colors.
+2- Fact check: verify if the pen has the expected length and width.
+3- Intended use: does the pen achieve its objective (does it write, draw or color properly) in the place it is supposed to be used?
+4- Intended use (in the case that the ink is not intended to be permanent): does the ink washes off of the place it is
+supposed to be used (even if it has been there for an extended period of time)? Does it wash off in hot, warm and cold water?
+5- Safety (in the case children are going to use the pen): is the pen safe (non-toxic) for children?
+6- Unintended uses: how else might the target audience use the pen? They might write on other surfaces, so it should be checked
+whether the behavior there is correct. They might also stomp on the pen, throw it, and so on.
