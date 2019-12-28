@@ -1,0 +1,25 @@
+To test an ATM I would start by asking questions to understand the scenario:
+1- Who is going to use the ATM (anyone, blind people or other specific group of people).
+2- For what objective (withdrawing money, transferring money, checking the account balance, or something else).
+3- What tools are available to test? Do we have access to the code, or just to the ATM?
+
+I would then break down the problem into different testable components.
+These components include:
+1- Logging in
+2- Withdrawing money
+3- Depositing money
+4- Checking balance
+5- Transferring money
+
+A mix of manual and automated testing would be used.
+Manual testing would involve going through the steps above, making sure to check for all the error cases (low balance,
+new account, nonexistent account, and so on).
+Automated testing would involve automating all the above standard scenarios and also looking for specific issues, such as
+race conditions. Ideally, a closed system would be set up with fake accounts and it would be ensured that, even if
+someone withdraws and deposits money rapidly from different locations, the person never gets money or loses money that
+she shouldn't.
+
+Above all, security and reliability would be prioritized. People's account must always be protected, and money should
+always be properly accounted for.
+It would also be checked that there is no way to insert some device to try to steal people's credit cards and that there
+is no way to retrieve money from the ATM illegally.
