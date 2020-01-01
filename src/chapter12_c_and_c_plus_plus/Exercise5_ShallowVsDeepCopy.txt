@@ -1,0 +1,25 @@
+A shallow copy copies all the member values from one object to another.
+A deep copy does all this and also deep copies any pointer objects.
+
+An example of shallow and deep copy is below.
+
+struct Test {
+    char *pointer;
+};
+
+void shallow_copy(Test &source, Test &destination) {
+    destination.pointer = source.pointer;
+}
+
+void deep_copy(Test &source, Test &destination) {
+    destination.pointer = (char *) malloc(strlen(source.pointer) + 1);
+    strcpy(destination.pointer, source.pointer);
+}
+
+Note that shallow_copy may cause a lot of programming runtime errors, especially with the creation and deletion of objects.
+Shallow copy should be used very carefully and only when a programmer really understands what he wants to do.
+In most cases, shallow copy is used when there is a need to pass information about a complex structure without actual
+duplication of data. One must also be careful with destruction of objects in a shallow copy.
+
+In real life, shallow copy is rarely used. Deep copy should be used in most cases, especially when the size of the
+copied structure is small.
