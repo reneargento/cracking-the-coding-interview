@@ -1,0 +1,4 @@
+Destructors are used to clean up memory and resources.
+If a base class' destructor were not virtual, then the base class' destructor would be called, even when the pointer/object
+were of a subclass type.
+Therefore, destructors are declared to be virtual to ensure that the destructor for the most derived class is called.
