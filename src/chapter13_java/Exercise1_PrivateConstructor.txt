@@ -1,0 +1,3 @@
+Since subclasses call their parent's constructor, keeping a constructor private means that only classes that have access
+to it (and to the class' private methods) will be able to inherit the class.
+In other words, if class A has a private constructor, it can only be inherited by its own or its parent's inner classes.
