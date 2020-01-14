@@ -1,0 +1,4 @@
+Yes, it will get executed.
+The finally block gets executed when the try block exits.
+Even when there is an attempt to exit within the try block (via a return statement, a continue statement, a break statement
+or any exception), the finally block will still be executed.
