@@ -1,0 +1,18 @@
+final
+The final statement has a different meaning depending on its context.
+* When applied to a variable (primitive): The value of the variable cannot change.
+* When applied to a variable (reference): The reference variable cannot point to any other object on the heap.
+* When applied to a method: The method cannot be overridden.
+* When applied to a class: The class cannot be subclassed.
+
+finally keyword
+There is an optional finally block after the try block or after the catch block.
+Statements in the finally block will always be executed, even if an exception is thrown (except if the Java Virtual
+Machine exits from the try block).
+The finally block is often used to write the clean-up code.
+It will be executed after the try and catch blocks, but before control transfers back to its origin.
+
+finalize()
+The automatic garbage collector calls the finalize() method just before actually destroying the object.
+A class can therefore override the finalize() method from the Object class in order to define custom behavior
+during garbage collection.
