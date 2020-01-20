@@ -1,0 +1,19 @@
+The implementation of Java generics is rooted in an idea of "type erasure".
+This technique eliminates the parameterized types when source code is translated to the Java Virtual Machine (JVM) byte code.
+This is quite different from C++. In C++, templates are essentially a glorified macro set, with the compiler creating a
+new copy of the template code for each type.
+Proof of this is in the fact that an instance of MyClass<Foo> will not share a static variable with MyClass<Bar>.
+Two instances of MyClass<Foo>, however, will share a static variable.
+In Java, static variables are shared across instances of MyClass, regardless of the different type parameters.
+
+Java generics and C++ templates have a number of other differences. These include:
+* C++ templates can use primitive types, like int. Java cannot and must instead use Integer.
+* In Java, it is possible to restrict the template's type parameters to be of a certain type.
+For instance, generics might be used to implement a CardDeck and it can be specified that the type parameter must extend
+from CardGame.
+* In C++, the type parameter can be instantiated, whereas Java does not support this.
+* In Java, the type parameter (i.e., the Foo in MyClass<Foo>) cannot be used for static methods and variables, since
+these would be shared between MyClass<Foo> and MyClass<Bar>. In C++, these classes are different, so the type parameter
+can be used for static methods and variables.
+* In Java, all instances of MyClass, regardless of their type parameters, are the same type.
+The type parameters are erased at runtime. In C++, instances with different type parameters are different types.
