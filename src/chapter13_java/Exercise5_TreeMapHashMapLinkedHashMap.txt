@@ -1,0 +1,21 @@
+All offer a key -> value map and a way to iterate through the keys. The most important distinction between these classes
+is the time guarantees and the ordering of the keys.
+* HashMap offers O(1) lookup and insertion. When iterating through the keys, though, their ordering is essentially
+arbitrary. It is implemented by an array of linked lists.
+* TreeMap offers O(log N) lookup and insertion. Keys are ordered, so it is possible to iterate through them in sorted
+order. This means that keys must implement the Comparable interface. TreeMap is implemented by a Red-Black Tree.
+* LinkedHashMap offers O(1) lookup and insertion. Keys are ordered by their insertion order. It is implemented by
+doubly-linked buckets.
+
+Examples of when each one is the best:
+* TreeMap - In the case of a mapping of names to Person objects, TreeMap enables to periodically output the people in
+alphabetical order by name.
+TreeMap also offers a way to, given a name, output the next 10 people. This could be useful for a "More" function
+in many applications.
+* LinkedHashMap - It is useful when the ordering of keys need to match the ordering of insertion. This is important
+in a caching situation, when it is required to delete the oldest item.
+* HashMap - Generally, unless there is a reason not to, HashMap should be used. It is typically faster and requires
+less overhead.
+
+That is, if it is important to get the keys back in insertion order, LinkedHashMap is best. If it is important to get
+the keys back in their true/natural order, TreeMap is best. Otherwise, HashMap is probably the best.
