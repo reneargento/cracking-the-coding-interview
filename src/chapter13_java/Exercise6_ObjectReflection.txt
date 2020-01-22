@@ -1,0 +1,14 @@
+Object reflection is a feature in Java that provides a way to get reflective information about Java classes and objects,
+and perform operations such as:
+1. Getting information about the methods and fields present inside the class at runtime.
+2. Creating a new instance of a class.
+3. Getting and setting the object fields directly by getting field reference, regardless of what the access modifier is.
+
+Why is Object Reflection useful?
+Object reflection can be very useful in some cases. The three main reasons are:
+1. It can help to observe or manipulate the runtime behavior of applications.
+2. It can help to debug or test programs because it allows direct access to methods, constructors, and fields.
+3. It is possible to call methods by name without knowing the methods in advance. For example, the user may pass in a
+class name, parameters for the constructor, and a method name. The application can then use this information to create
+an object and call a method. Doing these operations without reflection would require a complex series of if-statements,
+if it's possible at all.
