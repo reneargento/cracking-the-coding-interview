@@ -1,0 +1,8 @@
+SELECT BuildingName, ISNULL(Count, 0) as 'Count'
+FROM Buildings
+LEFT JOIN (SELECT Apartments.BuildingID, COUNT(*) as 'Count'
+           FROM Apartments, Requests
+           WHERE Apartments.AptID = Requests.AptID
+                 AND Requests.Status = 'Open'
+           GROUP BY Apartments.BuildingID) ReqCounts
+ON Buildings.BuildingID = ReqCounts.BuildingID
