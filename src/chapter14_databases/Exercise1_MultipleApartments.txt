@@ -1,0 +1,5 @@
+SELECT TenantName
+FROM Tenants, AptTenants
+WHERE Tenants.TenantID = AptTenants.TenantID
+GROUP BY TenantName
+HAVING COUNT(ApartmentID) > 1
