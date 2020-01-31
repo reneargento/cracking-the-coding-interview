@@ -1,0 +1,26 @@
+The different types of joins are:
+INNER JOIN: The result set contains only data where the criteria match.
+OUTER JOIN: An OUTER JOIN will always contain the results of INNER JOIN, but it may also contain some records that have
+no matching record in the other table. OUTER JOINs are divided into the following subtypes:
+* LEFT OUTER JOIN, or simply LEFT JOIN: The result will contain all records from the left table.
+If no matching records were found in the right table, then its fields will contain the NULL values.
+* RIGHT OUTER JOIN, or simply RIGHT JOIN: This type of join is the opposite of LEFT JOIN.
+It will contain every record from the right table; the missing fields from the left table will be NULL.
+If there are two tables, A and B, then the statement A LEFT JOIN B is equivalent to the statement B RIGHT JOIN A.
+* FULL OUTER JOIN: This type of join combines the results of the LEFT and RIGHT JOINs.
+All records from both tables will be included in the result set, regardless of whether or not a matching record
+exists in the other table. If no matching record was found, then the corresponding result fields will have a NULL value.
+
+Certain types of joins are better in certain situations:
+In the cases in which it is required for the records of both tables to match, INNER JOINs are better.
+An example of that is when there is a requisite to list all apartment IDs that are located inside a building with a
+specific building name.
+If the table Apartments has the AptID field and the BuildingID field, but the BuildingName field is located on the
+Buildings table, an INNER JOIN is required. It will join only the relevant records in both the Apartments and Buildings
+tables through the BuildingID field.
+In the cases that the records don't have to necessarily match, OUTER JOINs are better.
+An example of that is when there is a requisite to list all buildings and their number of open requests (seen on
+exercise 2). An INNER JOIN can be used to get a list of buildings that have at least one matching record in the Requests
+table with an open request, and the count of those records. However, buildings that have 0 open requests should also be
+listed. In order to do that, an OUTER JOIN can be used between that initial result set of buildings and the Buildings
+table, mapping the null values (which correspond to buildings that do not have open requests) to the 0 value.
