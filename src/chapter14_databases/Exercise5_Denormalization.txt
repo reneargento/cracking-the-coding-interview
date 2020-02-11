@@ -1,0 +1,25 @@
+Denormalization is a database optimization technique in which redundant data is added to one or more tables.
+This can help to avoid costly joins in a relational database.
+By contrast, in a traditional normalized database, data is stored in separate logical tables and an attempt is made
+to minimize redundant data. The goal is to have only one copy of each piece of data in the database.
+
+For example, in a normalized database, there might be a Courses table and a Teachers table.
+Each entry in Courses would store the teacherID for a Course but not the teacherName. When there is a need to retrieve
+a list of all Courses with the Teacher name, a join would be done between these two tables.
+In some ways, this is great; if a teacher changes his or her name, it only has to be updated in one place.
+The drawback, however, is that if the tables are large, an unnecessarily long time doing joins on tables may be spent.
+Denormalization, then, strikes a different compromise. Under denormalization, it is considered ok to have some redundancy
+and some extra effort to update the database in order to get the efficiency advantages of fewer joins.
+
+Pros of denormalization
+* Retrieving data is faster since less joins are required.
+* Queries to retrieve can be simpler (and therefore less likely to have bugs), since fewer tables have to be read.
+
+Cons of denormalization
+* Updates and inserts are more expensive.
+* Denormalization can make update and insert code harder to write.
+* Data may be inconsistent. Which is the "correct" value for a piece of data?
+* Data redundancy necessitates more storage.
+
+In a system that demands scalability, like that of any major tech companies, elements of both normalized and
+denormalized databases are almost always used.
