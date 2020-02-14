@@ -1,0 +1,49 @@
+Database design
+ __________________________
+|        Students          |
+|--------------------------|
+| StudentID | int          |
+| Name      | varchar(100) |
+| Address   | varchar(500) |
+ --------------------------
+
+ ____________________________
+|          Courses           |
+|----------------------------|
+| CourseID    | int          |
+| Name        | varchar(100) |
+| ProfessorID | int          |
+ ----------------------------
+
+ __________________________
+|     CourseEnrollment     |
+|--------------------------|
+| CourseID  | int          |
+| StudentID | int          |
+| Grade     | float        |
+| Term      | int          |
+ --------------------------
+
+ ____________________________
+|        Professors          |
+|----------------------------|
+| ProfessorID | int          |
+| Name        | varchar(100) |
+ ----------------------------
+
+Query to get the honor roll students (top 10%), sorted by their grade point average:
+
+DECLARE @GPACutOff float;
+SET @GPACutOff = (SELECT MIN(GPA) as 'GPAMin'
+                  FROM (SELECT TOP 10 PERCENT AVG(Grade) AS 'GPA'
+                        FROM CourseEnrollment
+                        GROUP BY CourseEnrollment.StudentID
+                        ORDER BY GPA desc) Grades);
+
+SELECT Name, GPA
+FROM (SELECT AVG(Grade) AS 'GPA', CourseEnrollment.StudentID
+      FROM CourseEnrollment
+      GROUP BY CourseEnrollment.StudentID
+      HAVING AVG(Grade) >= @GPACutOff) Honors
+INNER JOIN Students ON Honors.StudentID = Students.StudentID
+ORDER BY GPA desc
