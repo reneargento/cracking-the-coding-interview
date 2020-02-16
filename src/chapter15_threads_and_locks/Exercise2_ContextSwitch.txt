@@ -1,0 +1,60 @@
+Considering the swapping processes to be P1 (the process executing) and P2 (the process waiting for execution):
+
+To measure the time spent in a context switch the timestamps of the last and first instruction of P1 and P2 should be
+recorded. The context switch time is the difference in the timestamps between them.
+
+The tricky parts are to find out when the swapping occurs and the fact that swapping is governed by the scheduling
+algorithm of the operating system and there may be many kernel level threads which are also doing context switches.
+Other processes could be contending for the CPU or the kernel could be handling interrupts.
+The user does not have any control over these extraneous context switches.
+For instance, if between the switch from P1 to P2 the kernel decides to handle an interrupt, then the context switch
+time would be overstated.
+
+In order to overcome these obstacles, an environment must be constructed such that after P1 executes, the task
+scheduler immediately selects P2 to run. This may be accomplished by constructing a data channel, such as a pipe,
+between P1 and P2 and having the two processes play a game of ping-pong with a data token.
+
+Considering P1 to be the initial sender and P2 to be the receiver.
+Initially, P2 is blocked (sleeping) as it awaits the data token.
+When P1 executes, it delivers the token over the data channel to P2 and immediately attempts to read a response token.
+However, since P2 has not yet had a chance to run, no such token is available for P1 and the process is blocked.
+This relinquishes the CPU.
+
+A context switch results and the task scheduler must select another process to run.
+Since P2 is now in a ready-to-run state, it is a desirable candidate to be selected by the task scheduler for execution.
+When P2 runs, the roles of P1 and P2 are swapped. P2 is now acting as the sender and P1 as the blocked receiver.
+The game ends when P2 returns the token to P1.
+
+To summarize, an iteration of the game is played with the following steps:
+1. P2 blocks awaiting data from P1.
+2. P1 marks the start time.
+3. P1 sends token to P2.
+4. P1 attempts to read a response token from P2. This induces a context switch.
+5. P2 is scheduled and receives the token.
+6. P2 sends a response token to P1.
+7. P2 attempts to read a response token from P1. This induces a context switch.
+8. P1 is scheduled and receives the token.
+9. P1 marks the end time.
+
+The key is that the delivery of a data token induces a context switch.
+Let Td and Tr be the time it takes to deliver and receive a data token, respectively, and let Tc be the amount of time
+spent in a context switch.
+At step 2, P1 records the timestamp of the delivery of the token, and at step 9, it records the timestamp of the response.
+The amount of time elapsed, T, between these events may be expressed by:
+T = 2 * (Td + Tc + Tr)
+This formula arises because of the following events: P1 sends a token (3), the CPU context switches (4), P2 receives it (5).
+P2 then sends the response token (6), the CPU context switches (7), and finally P1 receives it (8).
+
+P1 will be able to easily compute T, since this is just the time between events 3 and 8.
+So, to solve for Tc, the value of Td + Tr must be determined.
+This value can be measured by the length of time it takes P1 to send and receive a token to itself.
+This will not induce a context switch since P1 is running on the CPU at the time it sent the token and will not block to
+receive it.
+
+The game is played a number of iterations to reduce the impact of any variability in the elapsed time between steps 2 and
+9 that may result from unexpected kernel interrupts and additional kernel threads contending for the CPU.
+The smallest observed context switch time is selected as the final answer.
+
+However, all that can be ultimately said is that this is an approximation which depends on the underlying system.
+For example, an assumption is made that P2 is selected to run once a data token becomes available.
+But this selection is dependent on the implementation of the task scheduler and no guarantees can be made.
