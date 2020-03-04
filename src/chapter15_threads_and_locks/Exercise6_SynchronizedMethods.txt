@@ -1,0 +1,12 @@
+With a class with a synchronized method A and a normal method B, and two threads in one instance of a program:
+By applying the word synchronized to a method, we ensure that two threads cannot execute synchronized methods on the same
+object instance at the same time.
+
+So, the answer to whether both threads can execute method A at the same time depends.
+If the two threads have the same instance of the object, then no, they cannot simultaneously execute method A.
+However, if they have different instances of the object, then they can.
+
+For the second part of the question that asks if thread1 can execute synchronized method A while thread2 is executing
+non-synchronized method B:
+Since method B is not synchronized, there is nothing to block thread1 from executing method A while thread2 is executing
+method B. This is true regardless of whether thread1 and thread2 have the same instance of the object.
