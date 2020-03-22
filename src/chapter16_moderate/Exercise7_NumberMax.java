@@ -15,6 +15,8 @@ public class Exercise7_NumberMax {
         return 1 ^ bit;
     }
 
+    // O(1) runtime
+    // O(1) space
     public static int numberMax(int number1, int number2) {
         int number1Sign = sign(number1);
         int number2Sign = sign(number2);
