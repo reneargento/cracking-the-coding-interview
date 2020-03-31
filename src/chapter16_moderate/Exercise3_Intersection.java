@@ -19,12 +19,13 @@ public class Exercise3_Intersection {
         public class Line {
             public Point start, end;
             public double slope, yIntercept;
+            public static final double EPSILON = .0001;
 
             public Line(Point start, Point end) {
                 this.start = start;
                 this.end = end;
 
-                if (start.x == end.x) { // Vertical line
+                if (Math.abs(start.x - end.x) < EPSILON) { // Vertical line
                     slope = Double.POSITIVE_INFINITY;
                     yIntercept = Double.POSITIVE_INFINITY;
                 } else {

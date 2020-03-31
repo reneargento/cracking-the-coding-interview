@@ -60,6 +60,8 @@ public class Exercise13_BisectSquares {
         }
     }
 
+    public static final double EPSILON = .0001;
+
     /* Computes the point where the line segment connecting middle1 and middle2 intercepts the edge of square 1.
      * That is, draw a line from middle2 to middle1, and continue it out until the edge of the square. */
     private static Point extend(Point middle1, Point middle2, double square1Size) {
@@ -69,7 +71,7 @@ public class Exercise13_BisectSquares {
 
         /* If middle1 and middle2 have the same x value, then the slope calculation will throw a divide by 0 exception.
          * So, compute this edge case directly. */
-        if (middle1.x == middle2.x) {
+        if (Math.abs(middle1.x - middle2.x) < EPSILON) {
             return new Point(middle1.x, middle1.y + (square1Size / 2.0) * yDirection);
         }
 
