@@ -75,18 +75,18 @@ public class Exercise21_SumSwap {
     }
 
     public static void main(String[] args) {
-        int[] array1 = {4, 1, 2, 1, 1, 2};
-        int[] array2 = {3, 6, 3, 3};
+        int[] array1 = { 4, 1, 2, 1, 1, 2 };
+        int[] array2 = { 3, 6, 3, 3 };
         Pair pair1 = getValuesToSwap(array1, array2);
         System.out.println("Pair: " + pair1 + " Expected: 4, 6 (or 1, 3)");
 
-        int[] array3 = {1, 6, 3};
-        int[] array4 = {2};
+        int[] array3 = { 1, 6, 3 };
+        int[] array4 = { 2 };
         Pair pair2 = getValuesToSwap(array3, array4);
         System.out.println("Pair: " + pair2 + " Expected: 6, 2");
 
-        int[] array5 = {1, 2, 3};
-        int[] array6 = {2, 3};
+        int[] array5 = { 1, 2, 3 };
+        int[] array6 = { 2, 3 };
         Pair pair3 = getValuesToSwap(array5, array6);
         System.out.println("Pair: " + pair3 + " Expected: null");
     }
